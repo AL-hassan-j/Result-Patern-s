@@ -1,0 +1,15 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<TargetFramework>net10.0</TargetFramework>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<Nullable>enable</Nullable>
+		<GenerateDocumentationFile>true</GenerateDocumentationFile>
+		<AssemblyName>Gilgamesh.Results</AssemblyName>
+		<RootNamespace>Gilgamesh.Results</RootNamespace>
+		<Authors>Hassan Jamal</Authors>
+		<Description>Lightweight Result Pattern library for .NET operations and domain errors.</Description>
+	</PropertyGroup>
+
+
+</Project>
