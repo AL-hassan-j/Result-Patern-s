@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Test Run Report — Gilgamesh.Results</title>
+  <style>
+    :root {
+      --bg: #0f172a;
+      --surface: #1e293b;
+      --surface-hover: #273549;
+      --border: #334155;
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+      --pass: #10b981;
+      --pass-bg: rgba(16, 185, 129, 0.12);
+      --fail: #ef4444;
+      --fail-bg: rgba(239, 68, 68, 0.12);
+      --skip: #f59e0b;
+      --skip-bg: rgba(245, 158, 11, 0.12);
+      --accent: #38bdf8;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+      background-color: var(--bg);
+      color: var(--text-main);
+      line-height: 1.6;
+      padding: 2rem 1rem;
+    }
+
+    .container {
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+
+    header {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      gap: 1rem;
+      margin-bottom: 2rem;
+      padding-bottom: 1.25rem;
+      border-bottom: 1px solid var(--border);
+    }
+
+    header h1 {
+      font-size: 1.75rem;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+    }
+
+    .badge-runtime {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      color: var(--accent);
+      padding: 0.35rem 0.85rem;
+      border-radius: 999px;
+      font-size: 0.85rem;
+      font-weight: 600;
+    }
+
+    .summary-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+      gap: 1rem;
+      margin-bottom: 2rem;
+    }
+
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.25rem;
+    }
+
+    .card .label {
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--text-muted);
+      margin-bottom: 0.4rem;
+    }
+
+    .card .value {
+      font-size: 1.85rem;
+      font-weight: 700;
+    }
+
+    .card.pass .value { color: var(--pass); }
+    .card.fail .value { color: var(--fail); }
+    .card.skip .value { color: var(--skip); }
+    .card.rate .value { color: var(--accent); }
+
+    .assembly-box {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      overflow: hidden;
+      margin-bottom: 2rem;
+    }
+
+    .assembly-header {
+      padding: 1rem 1.25rem;
+      background: rgba(15, 23, 42, 0.45);
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+    }
+
+    .assembly-path {
+      font-family: "Cascadia Code", "Fira Code", Consolas, monospace;
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      word-break: break-all;
+    }
+
+    .group-title {
+      padding: 0.75rem 1.25rem;
+      background: rgba(56, 189, 248, 0.08);
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+      font-weight: 600;
+      font-size: 0.95rem;
+      color: var(--accent);
+      display: flex;
+      justify-content: space-between;
+    }
+
+    .test-list {
+      list-style: none;
+    }
+
+    .test-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 1rem;
+      padding: 0.85rem 1.25rem;
+      border-bottom: 1px solid rgba(51, 65, 85, 0.5);
+      transition: background 0.15s ease;
+    }
+
+    .test-item:last-child {
+      border-bottom: none;
+    }
+
+    .test-item:hover {
+      background: var(--surface-hover);
+    }
+
+    .test-left {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      min-width: 0;
+    }
+
+    .status-pill {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      background: var(--pass-bg);
+      color: var(--pass);
+      font-weight: bold;
+      font-size: 0.85rem;
+      flex-shrink: 0;
+    }
+
+    .test-name {
+      font-family: "Cascadia Code", "Fira Code", Consolas, monospace;
+      font-size: 0.88rem;
+      color: var(--text-main);
+      word-break: break-word;
+    }
+
+    .test-duration {
+      font-family: "Cascadia Code", "Fira Code", Consolas, monospace;
+      font-size: 0.82rem;
+      color: var(--text-muted);
+      background: var(--bg);
+      padding: 0.2rem 0.6rem;
+      border-radius: 6px;
+      border: 1px solid var(--border);
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+
+    .logs-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.25rem;
+    }
+
+    .logs-card h2 {
+      font-size: 1rem;
+      margin-bottom: 0.75rem;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .log-lines {
+      font-family: "Cascadia Code", "Fira Code", Consolas, monospace;
+      font-size: 0.85rem;
+      color: #cbd5e1;
+      background: var(--bg);
+      padding: 1rem;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      line-height: 1.8;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <div>
+        <h1>Test Run Details</h1>
+        <p style="color: var(--text-muted); font-size: 0.9rem;">Result Pattern Tests — Automated xUnit Execution Report</p>
+      </div>
+      <span class="badge-runtime">xUnit.net v3.1.4 • .NET 10.0.15</span>
+    </header>
+
+    <section class="summary-grid">
+      <div class="card">
+        <div class="label">Total Tests</div>
+        <div class="value">17</div>
+      </div>
+      <div class="card pass">
+        <div class="label">Passed</div>
+        <div class="value">17</div>
+      </div>
+      <div class="card fail">
+        <div class="label">Failed</div>
+        <div class="value">0</div>
+      </div>
+      <div class="card skip">
+        <div class="label">Skipped</div>
+        <div class="value">0</div>
+      </div>
+      <div class="card rate">
+        <div class="label">Pass Rate</div>
+        <div class="value">100%</div>
+      </div>
+      <div class="card">
+        <div class="label">Run Duration</div>
+        <div class="value">1s 140ms</div>
+      </div>
+    </section>
+
+    <section class="assembly-box">
+      <div class="assembly-header">
+        <span style="font-weight: 600;">Assembly</span>
+        <span class="assembly-path">E:\Custom Libarys\Result Patern's\Result Pattern Testsin\Debug
+et10.0\Result Pattern Tests.dll</span>
+      </div>
+
+      <!-- DomainErrorTests -->
+      <div class="group-title">
+        <span>DomainErrorTests</span>
+        <span>3 Passed</span>
+      </div>
+      <ul class="test-list">
+        <li class="test-item">
+          <div class="test-left">
+            <span class="status-pill">✔</span>
+            <span class="test-name">None_WhenAccessed_IsNoneReturnsTrue</span>
+          </div>
+          <span class="test-duration">37ms</span>
+        </li>
+        <li class="test-item">
+          <div class="test-left">
+            <span class="status-pill">✔</span>
+            <span class="test-name">None_WhenCheckedWithIsFailure_ReturnsTrue</span>
+          </div>
+          <span class="test-duration">&lt; 1ms</span>
+        </li>
+        <li class="test-item">
+          <div class="test-left">
+            <span class="status-pill">✔</span>
+            <span class="test-name">NullValue_WhenAccessed_HasExpectedCodeMessageAndValidationKind</span>
+          </div>
+          <span class="test-duration">&lt; 1ms</span>
+        </li>
+      </ul>
+
+      <!-- EmptyResultTests -->
+      <div class="group-title">
+        <span>EmptyResultTests</span>
+        <span>7 Passed</span>
+      </div>
+      <ul class="test-list">
+        <li class="test-item">
+          <div class="test-left">
+            <span class="status-pill">✔</span>
+            <span class="test-name">Success_WhenCalled_ReturnsSuccessWithNoError</span>
+          </div>
+          <span class="test-duration">41ms</span>
+        </li>
+        <li class="test-item">
+          <div class="test-left">
+            <span class="status-pill">✔</span>
+            <span class="test-name">Failure_WhenDomainErrorProvided_ReturnsFailureWithExpectedError</span>
+          </div>
+          <span class="test-duration">&lt; 1ms</span>
+        </li>
+        <li class="test-item">
+          <div class="test-left">
+            <span class="status-pill">✔</span>
+            <span class="test-name">ImplicitConversion_FromDomainError_ReturnsFailureWithExpectedError</span>
+          </div>
+          <span class="test-duration">&lt; 1ms</span>
+        </li>
+        <li class="test-item">
+          <div class="test-left">
+            <span class="status-pill">✔</span>
+            <span class="test-name">UpdateData_WhenEmailDoesNotMatch_ReturnsFailureWithExpectedError(email: "email@gmail.com")</span>
+          </div>
+          <span class="test-duration">1ms</span>
+        </li>
+        <li class="test-item">
+          <div class="test-left">
+            <span class="status-pill">✔</span>
+            <span class="test-name">UpdateData_WhenEmailMatches_ReturnsSuccessWithNoError(email: "abdul.hassan.jamal.abdul.hassan@gmail.com")</span>
+          </div>
+          <span class="test-duration">&lt; 1ms</span>
+        </li>
+        <li class="test-item">
+          <div class="test-left">
+            <span class="status-pill">✔</span>
+            <span class="test-name">Constructor_WhenSuccessWithError_ThrowsInvalidOperationException</span>
+          </div>
+          <span class="test-duration">&lt; 1ms</span>
+        </li>
+        <li class="test-item">
+          <div class="test-left">
+            <span class="status-pill">✔</span>
+            <span class="test-name">Constructor_WhenFailureWithNoneError_ThrowsInvalidOperationException</span>
+          </div>
+          <span class="test-duration">&lt; 1ms</span>
+        </li>
+      </ul>
+
+      <!-- ResultTTests -->
+      <div class="group-title">
+        <span>ResultTTests</span>
+        <span>7 Passed</span>
+      </div>
+      <ul class="test-list">
+        <li class="test-item">
+          <div class="test-left">
+            <span class="status-pill">✔</span>
+            <span class="test-name">Success_WithValidValue_ShouldReturnSuccessWithExpectedValueAndNoError</span>
+          </div>
+          <span class="test-duration">&lt; 1ms</span>
+        </li>
+        <li class="test-item">
+          <div class="test-left">
+            <span class="status-pill">✔</span>
+            <span class="test-name">Failure_WithError_ShoukdReturnFailureWithExpectedErrorAndThrowOnValueAccess</span>
+          </div>
+          <span class="test-duration">&lt; 1ms</span>
+        </li>
+        <li class="test-item">
+          <div class="test-left">
+            <span class="status-pill">✔</span>
+            <span class="test-name">ImplicitOperator_WithValidValue_ShouldReturnSuccessWithExpectedValueAndNoError</span>
+          </div>
+          <span class="test-duration">&lt; 1ms</span>
+        </li>
+        <li class="test-item">
+          <div class="test-left">
+            <span class="status-pill">✔</span>
+            <span class="test-name">ImplicitOperator_WithDomainError_ShouldReturnFailureWithExpectedError</span>
+          </div>
+          <span class="test-duration">1ms</span>
+        </li>
+        <li class="test-item">
+          <div class="test-left">
+            <span class="status-pill">✔</span>
+            <span class="test-name">Success_WithNullValueForNullableType_ShouldReturnSuccessWithNullValue</span>
+          </div>
+          <span class="test-duration">37ms</span>
+        </li>
+        <li class="test-item">
+          <div class="test-left">
+            <span class="status-pill">✔</span>
+            <span class="test-name">Divid_WithInputs_ShouldReturnExpectedResultStateAndValue(a: 10, b: 2, expectedValue: 5, expectedSuccess: True)</span>
+          </div>
+          <span class="test-duration">6ms</span>
+        </li>
+        <li class="test-item">
+          <div class="test-left">
+            <span class="status-pill">✔</span>
+            <span class="test-name">Divid_WithInputs_ShouldReturnExpectedResultStateAndValue(a: 10, b: 0, expectedValue: 0, expectedSuccess: False)</span>
+          </div>
+          <span class="test-duration">1ms</span>
+        </li>
+      </ul>
+    </section>
+
+    <section class="logs-card">
+      <h2>Informational Messages</h2>
+      <div class="log-lines">
+        <div>[xUnit.net 00:00:00.00] xUnit.net VSTest Adapter v3.1.4+50e68bbb8b (64-bit .NET 10.0.15)</div>
+        <div>[xUnit.net 00:00:00.14] &nbsp;&nbsp;Discovering: Result Pattern Tests</div>
+        <div>[xUnit.net 00:00:00.21] &nbsp;&nbsp;Discovered: &nbsp;Result Pattern Tests</div>
+        <div>[xUnit.net 00:00:00.26] &nbsp;&nbsp;Starting: &nbsp;&nbsp;&nbsp;Result Pattern Tests</div>
+        <div>[xUnit.net 00:00:00.41] &nbsp;&nbsp;Finished: &nbsp;&nbsp;&nbsp;Result Pattern Tests</div>
+      </div>
+    </section>
+  </div>
+</body>
+</html>
