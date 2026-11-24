@@ -442,15 +442,20 @@ if (result.IsFailure)
 dotnet build
 ```
 
-## Testing
+### Testing
 
-Tests are not included in the repository yet. **The upcoming version will include a comprehensive test suite** covering:
+The repository currently includes an xUnit unit test suite (`Result Pattern Tests` with **17 tests** in total) to verify library stability and prevent regressions as the API evolves, covering:
 
-- Successful and failed results
-- Invalid result states
-- Accessing values in successful and failed results
-- Implicit conversions
-- `DomainError` factories and classifications
+- Success and failure results.
+- Enforcing invariants and rejecting invalid states (including `InvalidOperationException` guards)[cite: 2, 3].
+- Reading values from successful and failed results[cite: 3].
+- Implicit conversions[cite: 2, 3].
+- Creating `DomainError` instances along with helper checks and `ErrorKind` classification[cite: 1].
+
+You can run the tests directly with:
+
+```powershell
+dotnet test
 
 ## Author
 
@@ -953,12 +958,15 @@ dotnet build
 
 ### الاختبارات
 
-الاختبارات ليست مضافة حاليًا إلى المستودع، لكن **الإصدار القادم سيحتوي على اختبارات شاملة** تغطي سلوك المكتبة، خاصةً:
+يضم المستودع حاليًا مجموعة اختبارات وحدة باستخدام xUnit (ضمن مشروع `Result Pattern Tests` بإجمالي **17 اختبارًا**) لتأكيد استقرار سلوك المكتبة ومنع تراجع الميزات مستقبلًا، وتشمل[cite: 4, 6]:
 
-- النجاح والفشل.
-- منع الحالات غير الصالحة.
-- قراءة القيمة من النتائج الناجحة والفاشلة.
-- التحويلات ضمنية.
-- إنشاء وتصنيف أخطاء `DomainError`.
+- حالات النجاح والفشل[cite: 4, 6].
+- التحقق من القيود ومنع الحالات غير الصالحة (واستثناءات `InvalidOperationException`)[cite: 2, 3, 4, 6].
+- قراءة القيمة من النتائج الناجحة والفاشلة[cite: 3, 4, 6].
+- التحويلات الضمنية[cite: 2, 3, 4, 6].
+- إنشاء أخطاء `DomainError` ودوال التحقق والتصنيف عبر `ErrorKind`[cite: 1, 4, 6].
 
----
+يمكن تشغيل الاختبارات مباشرةً عبر الأمر:
+
+```powershell
+dotnet test
