@@ -1,16 +1,22 @@
-﻿using static System.Runtime.InteropServices.JavaScript.JSType;
-
+﻿
 namespace Gilgamesh.Results.Results;
 
 
 /// <summary>
-/// الكلاس الأساسي المشترك لنتائج العمليات، ويحمل حالة النجاح أو الفشل وتفاصيل الخطأ.
 /// Base class for operation results, holding success/failure state and error details.
 /// </summary>
 public abstract class ResultBase
 {
 
-
+    /// <summary>
+    /// Initializes a new instance of <see cref="ResultBase"/> while enforcing state invariants between success status and error.
+    /// </summary>
+    /// <param name="isSuccess">Indicates whether the operation succeeded.</param>
+    /// <param name="error">The associated domain error, which must be <see cref="DomainError.None"/> on success and non-none on failure.</param>
+    /// <exception cref="InvalidOperationException">
+    /// Thrown when <paramref name="isSuccess"/> is <see langword="true"/> with a non-none <paramref name="error"/>,
+    /// or when <paramref name="isSuccess"/> is <see langword="false"/> and <paramref name="error"/> is <see cref="DomainError.None"/>.
+    /// </exception>
     protected ResultBase(bool isSuccess, DomainError error)
     {
 
@@ -26,21 +32,18 @@ public abstract class ResultBase
     }
 
     /// <summary>
-    /// يشير إلى ما إذا كانت العملية قد نجحت.
     /// Indicates whether the operation succeeded.
     /// </summary>
     public bool IsSuccess { get; }
 
 
     /// <summary>
-    /// يشير إلى ما إذا كانت العملية قد فشلت.
     /// Indicates whether the operation failed.
     /// </summary>
     public bool IsFailure => !IsSuccess;
 
 
     /// <summary>
-    /// يمثل الخطأ المرتبط بالنتيجة، أو <see cref="DomainError.None"/> في حال النجاح.
     /// Represents the error associated with the result, or <see cref="DomainError.None"/> on success.
     /// </summary>
     public DomainError Error { get; }
